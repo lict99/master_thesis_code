@@ -1,9 +1,11 @@
 # %%
-# Attaching packages
+# Attaching packages and functions
 library("table1")
 library("readr")
 library("dplyr")
 library("openxlsx2")
+
+source("functions/table1_func.R", local = TRUE)
 
 # %%
 # Setting up the output directory
@@ -66,21 +68,8 @@ tb1 <- table1(
   ~ . | group,
   tb1_df,
   overall = FALSE,
-  render.continuous = function(x, ...) {
-    with(
-      stats.apply.rounding(
-        stats.default(x, ...),
-        digits = 1,
-        rounding.fn = round_pad,
-        ...
-      ),
-      c(
-        "",
-        `Mean (SD)` = sprintf("%s (%s)", MEAN, SD),
-        `Median (IQR)` = sprintf("%s (%s, %s)", MEDIAN, Q1, Q3)
-      )
-    )
-  }
+  render.continuous = render_numeral,
+  extra.col = list(p_value = cal_p_value)
 ) |>
   as.data.frame()
 

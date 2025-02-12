@@ -10,21 +10,14 @@ library("ggtext")
 library("patchwork")
 
 source("functions/surv_plot.R", local = TRUE)
+source("functions/font_config.R", local = TRUE)
+
+showtext_auto()
 
 # %%
 # Setting output directory
 output_dir <- "results/03"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
-
-# %%
-# Configuring Chinese font
-showtext_auto()
-font_add(
-  family = "heiti",
-  regular = "data/fonts/NotoSansSC-Regular.ttf",
-  bold = "data/fonts/NotoSansSC-Bold.ttf"
-)
-font_zh <- "heiti"
 
 # %%
 # Loading UK Biobank data

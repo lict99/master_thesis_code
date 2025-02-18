@@ -8,7 +8,7 @@
 
   fml <- as.formula(
     paste(
-      sprintf("survival::Surv(%s, %s)", time, event),
+      sprintf("Surv(%s, %s)", time, event),
       "~",
       paste(c(target, covariates), collapse = " + ")
     )

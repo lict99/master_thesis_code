@@ -1,4 +1,6 @@
 # Configuring Chinese fonts
+loadNamespace("sysfonts")
+
 sysfonts::font_add(
   family = "heiti",
   regular = "data/fonts/NotoSansSC-Regular.ttf",

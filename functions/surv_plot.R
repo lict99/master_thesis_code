@@ -23,6 +23,11 @@ plot_ggsurv <- function(
     title,
     family,
     ...) {
+  loadNamespace("survminer")
+  loadNamespace("ggplot2")
+  loadNamespace("ggtext")
+  loadNamespace("patchwork")
+
   params <- list(
     fit = fit,
     palette = c("#BC3C29FF", "#0072B5FF"),
@@ -56,20 +61,24 @@ plot_ggsurv <- function(
     ylab = "生存率",
     risk.table.title = "存在风险的人数"
   )
+
   if (any(names(list(...)) %in% names(params))) {
     stop("Duplicated parameters", call. = FALSE)
   }
+
   p <- do.call(survminer::ggsurvplot, c(params, list(...)))
+
   pvalue <- survminer::surv_pvalue(fit, method = "survdiff")[["pval"]]
+
   # We set the minimal value of y-axis to 0.4
   ymin <- 0.4
+
   p$plot <- p$plot +
     ggplot2::annotate(
-      geom = "richtext",
+      geom = "text",
       x = 0,
       y = ymin,
-      label = paste0("log-rank 检验<br>P 值 = ", sprintf("%.3f", pvalue)),
-      label.color = NA,
+      label = paste0("log-rank 检验\nP 值 = ", sprintf("%.3f", pvalue)),
       size = 5,
       family = family,
       hjust = 0,
@@ -81,11 +90,14 @@ plot_ggsurv <- function(
       axis.title.x = ggplot2::element_blank()
     ) +
     ggplot2::scale_y_continuous(limits = c(ymin, 1))
+
   p$table <- p$table + ggplot2::theme(
     text = ggplot2::element_text(family = family),
     axis.title.y = ggtext::element_markdown(),
     plot.title = ggplot2::element_text(size = 15)
   )
+
   pp <- (p$plot / p$table) + patchwork::plot_layout(heights = c(0.75, 0.25))
+
   return(pp)
 }

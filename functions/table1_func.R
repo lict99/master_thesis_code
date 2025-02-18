@@ -10,6 +10,8 @@
 #' @details
 #' The statistics are rounded with 0-padding and 1 digit.
 render_numeral <- function(x, ...) {
+  loadNamespace("table1")
+
   with(
     table1::stats.apply.rounding(
       table1::stats.default(x, ...),
@@ -36,14 +38,18 @@ render_numeral <- function(x, ...) {
 #' - Wilcoxon rank-sum test with continuity correction for numeric data;
 #' - Fisher's exact test for categorical data.
 cal_p_value <- function(x, ...) {
+  loadNamespace("stats")
+
   y <- unlist(x, use.names = FALSE)
   g <- factor(rep(seq_along(x), times = vapply(x, length, integer(1L))))
+
   if (is.numeric(y)) {
-    p <- wilcox.test(y ~ g, correct = TRUE)$p.value
+    p <- stats::wilcox.test(y ~ g, correct = TRUE)$p.value
   } else if (is.factor(y) || is.character(y) || is.logical(y)) {
-    p <- fisher.test(table(y, g))$p.value
+    p <- stats::fisher.test(table(y, g))$p.value
   } else {
     stop("Not supported data type", call. = FALSE)
   }
+
   return(format.pval(p, digits = 3, eps = 0.001))
 }

@@ -2,7 +2,6 @@
 library("readr")
 library("tidyr")
 library("dplyr")
-library("survival")
 library("grid")
 library("forestploter")
 library("showtext")

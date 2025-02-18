@@ -6,6 +6,7 @@ library("survival")
 library("grid")
 library("forestploter")
 library("showtext")
+library("openxlsx2")
 
 source("functions/font_config.R", local = TRUE)
 source("functions/coxph_pairwise.R", local = TRUE)
@@ -50,6 +51,8 @@ ukb_coxph_df <- calc_coxph_pairwise(
   ),
   data = ukb_data
 )
+
+write_xlsx(ukb_coxph_df, file.path(output_dir, "ukb_coxph_forest.xlsx"))
 
 # %%
 ukb_forest_data <- ukb_coxph_df |>
@@ -212,6 +215,9 @@ hx_coxph_df <- calc_coxph_pairwise(
   ),
   data = hx_data
 )
+
+write_xlsx(hx_coxph_df, file.path(output_dir, "hx_coxph_forest.xlsx"))
+
 # %%
 hx_forest_data <- hx_coxph_df |>
   mutate(

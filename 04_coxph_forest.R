@@ -23,10 +23,6 @@ ukb_data <- read_csv("results/00/ukb_data.csv") |>
     plt_100u = platelet_count / 100,
     plt_300 = factor(plt_300, levels = c("no", "yes")),
     plt_400 = factor(plt_400, levels = c("no", "yes")),
-    ethnic_background = factor(
-      ethnic_background,
-      levels = c("white", "asian", "black", "mixed", "other")
-    ),
     sex = factor(sex, levels = c("female", "male")),
     smoking_status = factor(smoking_status, levels = c("never", "ever")),
     alcohol_drinker_status = factor(
@@ -46,7 +42,7 @@ ukb_coxph_df <- calc_coxph_pairwise(
     c("age_at_diagnosis", "sex"),
     c(
       "age_at_diagnosis", "sex", "body_mass_index",
-      "smoking_status", "alcohol_drinker_status", "ethnic_background"
+      "smoking_status", "alcohol_drinker_status"
     )
   ),
   data = ukb_data

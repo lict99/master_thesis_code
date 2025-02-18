@@ -80,7 +80,7 @@ ukb_forest_data <- ukb_coxph_df |>
     ci_col = paste(rep(" ", 20), collapse = " "),
     model = covariates |>
       nchar() |>
-      factor(labels = c("模型1", "模型2")) |>
+      factor(labels = c("模型 1", "模型 2")) |>
       as.character()
   ) |>
   add_row(
@@ -115,7 +115,7 @@ ukb_forest_layout <- ukb_forest_data |>
           event_type = "生存结局",
           hr_fmt = "HR (95% CI)",
           ci_col = " ",
-          p_fmt = "P值",
+          p_fmt = "P 值",
           stop("Unknown column name", call. = FALSE)
         )
       },
@@ -132,9 +132,9 @@ theme <- forest_theme(
   ci_col = c("#BC3C29FF", "#0072B5FF", "#20854EFF"),
   legend_name = "血小板计数",
   legend_value = c(
-    expression("每" ~ 100 ~ "×" ~ 10^9 * "/L"),
-    expression(">" ~ 300 ~ "×" ~ 10^9 * "/L"),
-    expression(">" ~ 400 ~ "×" ~ 10^9 * "/L")
+    expression("每" ~ 100 %*% 10^9 * "/L"),
+    expression(">" ~ 300 %*% 10^9 * "/L"),
+    expression(">" ~ 400 %*% 10^9 * "/L")
   ),
   legend_position = "bottom",
   legend_gp = gpar(cex = 0.9),
@@ -244,7 +244,7 @@ hx_forest_data <- hx_coxph_df |>
     ci_col = paste(rep(" ", 20), collapse = " "),
     model = covariates |>
       nchar() |>
-      factor(labels = c("模型1", "模型2")) |>
+      factor(labels = c("模型 1", "模型 2")) |>
       as.character()
   ) |>
   add_row(
@@ -283,7 +283,7 @@ hx_forest_layout <- hx_forest_data |>
           event_type = "生存结局",
           hr_fmt = "HR (95% CI)",
           ci_col = " ",
-          p_fmt = "P值",
+          p_fmt = "P 值",
           stop("Unknown column name", call. = FALSE)
         )
       },

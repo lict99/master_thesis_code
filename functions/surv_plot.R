@@ -68,9 +68,10 @@ plot_ggsurv <- function(
       geom = "richtext",
       x = 0,
       y = ymin,
-      label = paste0("log-rank 检验<br>P值 = ", sprintf("%.3f", pvalue)),
+      label = paste0("log-rank 检验<br>P 值 = ", sprintf("%.3f", pvalue)),
       label.color = NA,
       size = 5,
+      family = family,
       hjust = 0,
       vjust = 0
     ) +

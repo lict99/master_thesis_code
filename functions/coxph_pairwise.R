@@ -1,9 +1,9 @@
 .calc_coxph <- function(
+    data,
     time,
     event,
     target,
-    covariates,
-    data) {
+    covariates) {
   loadNamespace("survival")
 
   fml <- as.formula(
@@ -37,10 +37,10 @@
 }
 
 calc_coxph_pairwise <- function(
+    data,
     event_time_list,
     targets,
-    covariates_list,
-    data) {
+    covariates_list) {
   product_df <- expand.grid(
     target = targets,
     covariates = covariates_list,
@@ -52,11 +52,11 @@ calc_coxph_pairwise <- function(
     seq_len(nrow(product_df)),
     function(i) {
       .calc_coxph(
+        data = data,
         time = product_df[i, "event_time"][[1]][["time"]],
         event = product_df[i, "event_time"][[1]][["event"]],
         target = product_df[i, "target"],
-        covariates = unlist(product_df[i, "covariates"], use.names = FALSE),
-        data = data
+        covariates = unlist(product_df[i, "covariates"], use.names = FALSE)
       )
     }
   )

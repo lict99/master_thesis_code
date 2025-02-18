@@ -32,6 +32,7 @@ ukb_data <- read_csv("results/00/ukb_data.csv") |>
 
 # %%
 ukb_coxph_df <- calc_coxph_pairwise(
+  data = ukb_data,
   event_time_list = list(
     c(event = "os", time = "os_time"),
     c(event = "css", time = "css_time")
@@ -43,8 +44,7 @@ ukb_coxph_df <- calc_coxph_pairwise(
       "age_at_diagnosis", "sex", "body_mass_index",
       "smoking_status", "alcohol_drinker_status"
     )
-  ),
-  data = ukb_data
+  )
 )
 
 write_xlsx(ukb_coxph_df, file.path(output_dir, "ukb_coxph_forest.xlsx"))
@@ -195,6 +195,7 @@ hx_data <- read_csv("results/01/hx_data.csv") |>
 
 # %%
 hx_coxph_df <- calc_coxph_pairwise(
+  data = hx_data,
   event_time_list = list(
     c(event = "os", time = "os_time"),
     c(event = "css", time = "css_time"),
@@ -207,8 +208,7 @@ hx_coxph_df <- calc_coxph_pairwise(
       "age", "sex", "body_mass_index",
       "smoking", "alcohol", "neo_adjuvant_therapy"
     )
-  ),
-  data = hx_data
+  )
 )
 
 write_xlsx(hx_coxph_df, file.path(output_dir, "hx_coxph_forest.xlsx"))

@@ -33,7 +33,7 @@ ukb_tb1_df <- ukb_data |>
   select(
     platelet_count, plt_300, plt_400,
     os, css, dfs, fu_time,
-    age, sex, body_mass_index, smoking, alcohol,
+    age, sex, body_mass_index, smoking, alcohol, diagnostic_lag_time,
     group
   )
 
@@ -50,12 +50,13 @@ hx_tb1_df <- hx_data |>
     css = case_match(css, 0 ~ FALSE, 1 ~ TRUE),
     dfs = case_match(dfs, 0 ~ FALSE, 1 ~ TRUE),
     fu_time = os_time,
+    diagnostic_lag_time = NA,
     group = "West China"
   ) |>
   select(
     platelet_count, plt_300, plt_400,
     os, css, dfs, fu_time,
-    age, sex, body_mass_index, smoking, alcohol,
+    age, sex, body_mass_index, smoking, alcohol, diagnostic_lag_time,
     group
   )
 

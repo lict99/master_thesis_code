@@ -43,13 +43,18 @@ cal_p_value <- function(x, ...) {
   y <- unlist(x, use.names = FALSE)
   g <- factor(rep(seq_along(x), times = vapply(x, length, integer(1L))))
 
-  if (is.numeric(y)) {
-    p <- stats::wilcox.test(y ~ g, correct = TRUE)$p.value
-  } else if (is.factor(y) || is.character(y) || is.logical(y)) {
-    p <- stats::fisher.test(table(y, g))$p.value
-  } else {
-    stop("Not supported data type", call. = FALSE)
-  }
+  p <- tryCatch(
+    if (is.numeric(y)) {
+      stats::wilcox.test(y ~ g, correct = TRUE)$p.value
+    } else if (is.factor(y) || is.character(y) || is.logical(y)) {
+      stats::fisher.test(table(y, g))$p.value
+    },
+    error = function(e) NA_real_
+  )
 
-  return(format.pval(p, digits = 3, eps = 0.001))
+  if (is.na(p)) {
+    return(NA_real_)
+  } else {
+    return(format.pval(p, digits = 3, eps = 0.001))
+  }
 }

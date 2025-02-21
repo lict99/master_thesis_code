@@ -28,12 +28,14 @@ ukb_tb1_df <- ukb_data |>
     age = age_at_diagnosis,
     smoking = smoking_status,
     alcohol = alcohol_drinker_status,
+    neo_adjuvant_therapy = NA,
     group = "UK Biobank"
   ) |>
   select(
     platelet_count, plt_300, plt_400,
     os, css, dfs, fu_time,
-    age, sex, body_mass_index, smoking, alcohol, diagnostic_lag_time,
+    age, sex, body_mass_index, smoking, alcohol, neo_adjuvant_therapy,
+    diagnostic_lag_time,
     group
   )
 
@@ -50,13 +52,19 @@ hx_tb1_df <- hx_data |>
     css = case_match(css, 0 ~ FALSE, 1 ~ TRUE),
     dfs = case_match(dfs, 0 ~ FALSE, 1 ~ TRUE),
     fu_time = os_time,
+    neo_adjuvant_therapy = case_match(
+      neo_adjuvant_therapy,
+      "no" ~ FALSE,
+      "yes" ~ TRUE
+    ),
     diagnostic_lag_time = NA,
     group = "West China"
   ) |>
   select(
     platelet_count, plt_300, plt_400,
     os, css, dfs, fu_time,
-    age, sex, body_mass_index, smoking, alcohol, diagnostic_lag_time,
+    age, sex, body_mass_index, smoking, alcohol, neo_adjuvant_therapy,
+    diagnostic_lag_time,
     group
   )
 

@@ -53,7 +53,7 @@ write_xlsx(ukb_coxph_df, file.path(output_dir, "ukb_coxph_forest.xlsx"))
 ukb_forest_data <- ukb_coxph_df |>
   mutate(
     hr_fmt = sprintf("%.2f (%.2f - %.2f)", hr, hr_l95, hr_u95),
-    p_fmt = ifelse(p_value < 0.001, "<0.001", sprintf("%.3f", p_value)),
+    p_fmt = ifelse(p_value < 0.001, "< 0.001", sprintf("%.3f", p_value)),
   ) |>
   pivot_wider(
     names_from = target,
@@ -217,7 +217,7 @@ write_xlsx(hx_coxph_df, file.path(output_dir, "hx_coxph_forest.xlsx"))
 hx_forest_data <- hx_coxph_df |>
   mutate(
     hr_fmt = sprintf("%.2f (%.2f - %.2f)", hr, hr_l95, hr_u95),
-    p_fmt = ifelse(p_value < 0.001, "<0.001", sprintf("%.3f", p_value)),
+    p_fmt = ifelse(p_value < 0.001, "< 0.001", sprintf("%.3f", p_value)),
   ) |>
   pivot_wider(
     names_from = target,

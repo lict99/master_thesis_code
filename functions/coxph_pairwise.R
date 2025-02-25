@@ -63,3 +63,45 @@ calc_coxph_pairwise <- function(
 
   return(do.call("rbind", all_model_list))
 }
+
+calc_rolling_coxph <- function(
+    data,
+    time,
+    event,
+    target,
+    covariates,
+    rolling_by,
+    start,
+    end,
+    window,
+    step) {
+  window_start <- seq(
+    from = start,
+    to = end - window,
+    by = step
+  )
+  window_end <- window_start + window
+
+  df_list <- mapply(
+    FUN = function(start, end) {
+      sub_idx <- data[[rolling_by]] >= start & data[[rolling_by]] <= end
+      sub_data <- data[sub_idx, , drop = FALSE]
+      df <- .calc_coxph(
+        data = sub_data,
+        time = time,
+        event = event,
+        target = target,
+        covariates = covariates
+      )
+      df["start"] <- start
+      df["end"] <- end
+      return(df)
+    },
+    start = window_start,
+    end = window_end,
+    SIMPLIFY = FALSE,
+    USE.NAMES = FALSE
+  )
+
+  return(do.call("rbind", df_list))
+}

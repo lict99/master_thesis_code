@@ -63,7 +63,10 @@ for (event in c("os", "css")) {
       ) +
       theme_classic(base_family = font_zh) +
       theme(
-        legend.position = "top",
+        legend.position = "inside",
+        legend.position.inside = c(0.5, 1),
+        legend.direction = "horizontal",
+        legend.justification.inside = c(0.5, 1),
         axis.text = element_text(color = "black")
       )
 
@@ -71,7 +74,7 @@ for (event in c("os", "css")) {
       file.path(output_dir, sprintf("%s_%s_rolling.pdf", event, covar_set)),
       plot = p,
       width = 5,
-      height = 2.5,
+      height = 2,
       units = "in"
     )
   }

@@ -5,7 +5,6 @@ description = "This project encompasses all code scripts for my master thesis re
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dowhy>=0.12",
     "fastexcel>=0.12.1",
     "pandas>=2.2.3",
     "polars>=1.20.0",

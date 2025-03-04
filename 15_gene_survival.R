@@ -43,8 +43,9 @@ gene_expr <- lapply(
       filter(gene_id %in% eqtl_genes$gene_id) |>
       (function(data) {
         gene_id <- data[["gene_id"]]
-        samples <- colnames(data)[-1] |> substr(1, 16)
-        value <- as.data.frame(t(data[-1]))
+        gene_id_col <- colnames(data) %in% "gene_id"
+        samples <- colnames(data)[!gene_id_col] |> substr(1, 16)
+        value <- as.data.frame(t(data[!gene_id_col]))
         colnames(value) <- gene_id
         value["sample"] <- samples
         return(value)

@@ -135,7 +135,7 @@ eqtl_exp_data <- lapply(
     eqtl |>
       mutate(
         phenotype = gene,
-        id = paste(variant, gene, sep = "-"),
+        id = paste(variant, gene, sep = " -> "),
         eaf = NA_real_
       ) |>
       as.data.frame() |>

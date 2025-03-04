@@ -50,6 +50,8 @@ gwas_coxph <- lapply(
   }
 )
 
+save(gwas_coxph, file = file.path(output_dir, "gwas_coxph.rda"))
+
 # %%
 mr_iv_info <- lapply(
   gwas_coxph,

@@ -1,3 +1,25 @@
+#' Calculate Cox Proportional Hazard models with Restricted Cubic Splines
+#'
+#' This internal function fits two Cox proportional hazard models:
+#' 1. A linear model with the target variable.
+#' 2. A non-linear model using restricted cubic splines for the target variable.
+#' It then calculates non-linear hazard ratios across the range of the target
+#' variable.
+#'
+#' @param data A data frame containing the variables for analysis.
+#' @param time The name of the time variable.
+#' @param event The name of the event indicator variable.
+#' @param target The name of the target variable to be modeled with restricted
+#' cubic splines.
+#' @param covariates A character vector of covariate names to include in the
+#' model.
+#'
+#' @return A list containing:
+#' 1. target_value: original values of the target variable.
+#' 2. prediction: data frame with predicted hazard ratios and confidence
+#' intervals.
+#' 3. p_value: p-value from likelihood ratio test comparing linear vs.
+#' non-linear models.
 .calc_coxph_rcs <- function(
     data,
     time,
@@ -63,6 +85,26 @@
   )
 }
 
+#' Plot Cox Proportional Hazard models with Restricted Cubic Splines
+#'
+#' This function creates a visualization of hazard ratios estimated using
+#' restricted cubic splines in a Cox proportional hazard model. The plot
+#' includes the hazard ratio curve, 95% confidence intervals, and a density
+#' distribution of the target variable.
+#'
+#' @param data A data frame containing the variables for analysis.
+#' @param time The name of the time variable.
+#' @param event The name of the event indicator variable.
+#' @param target The name of the target variable to be modeled with restricted
+#' cubic splines.
+#' @param covariates A character vector of covariate names to include in the
+#' model.
+#' @param font_family Font family to be used in the plot.
+#' @param xlab Label for the x-axis (defaults to target variable name).
+#' @param ylab Label for the y-axis (defaults to "风险比").
+#'
+#' @return A ggplot2 object displaying the hazard ratio curve, confidence
+#' intervals, and density distribution of the target variable.
 plot_coxph_rcs <- function(
     data,
     time,

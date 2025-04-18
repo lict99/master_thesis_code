@@ -12,7 +12,7 @@ source("functions/font_config.R", local = TRUE)
 showtext_auto()
 
 # %%
-# Setting output directory
+# Setting up output directory
 output_dir <- "results/03"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -36,6 +36,8 @@ for (event in c("os", "css")) {
       title = event,
       family = font_zh
     )
+
+    # Saving plots
     ggsave(
       file.path(output_dir, paste0("ukb_", plt, "_", event, ".pdf")),
       plot = p,
@@ -65,6 +67,8 @@ for (event in c("os", "css", "dfs")) {
       title = event,
       family = font_zh
     )
+
+    # Saving plots
     ggsave(
       file.path(output_dir, paste0("hx_", plt, "_", event, ".pdf")),
       plot = p,

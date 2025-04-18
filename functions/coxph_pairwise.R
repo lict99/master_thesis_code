@@ -1,3 +1,16 @@
+#' Calculate Cox Proportional Hazards Model
+#'
+#' An internal helper function that fits a Cox Proportional Hazards model and
+#' extracts relevant statistics for the target variable.
+#'
+#' @param data A data frame containing the variables in the model.
+#' @param time Character string specifying the time variable name.
+#' @param event Character string specifying the event variable name.
+#' @param target Character string specifying the target predictor variable.
+#' @param covariates Character vector of covariate names to include in the
+#' model.
+#'
+#' @return A data frame with model results.
 .calc_coxph <- function(
     data,
     time,
@@ -36,6 +49,18 @@
   return(df)
 }
 
+#' Calculate Cox Proportional Hazards Models for Pairwise Combinations
+#'
+#' Performs Cox Proportional Hazards regression for all combinations of targets,
+#' covariates, and event/time pairs.
+#'
+#' @param data A data frame containing all the variables.
+#' @param event_time_list List of event/time pairs, each containing "time" and
+#' "event" elements.
+#' @param targets Character vector of target predictor variables to analyze.
+#' @param covariates_list List of covariate sets to include in models.
+#'
+#' @return A data frame combining results from all models.
 calc_coxph_pairwise <- function(
     data,
     event_time_list,
@@ -64,6 +89,26 @@ calc_coxph_pairwise <- function(
   return(do.call("rbind", all_model_list))
 }
 
+#' Calculate Rolling Window Cox Proportional Hazards Models
+#'
+#' Fits Cox Proportional Hazards models over a series of time windows, creating
+#' a rolling analysis of hazard ratios over time.
+#'
+#' @param data A data frame containing all variables.
+#' @param time Character string specifying the time variable name.
+#' @param event Character string specifying the event variable name.
+#' @param target Character string specifying the target predictor variable.
+#' @param covariates Character vector of covariate names to include in the
+#' model.
+#' @param rolling_by Character string specifying the variable to use for
+#' defining windows.
+#' @param start Numeric value for the start of the first time point.
+#' @param end Numeric value for the end of the last time point.
+#' @param window Numeric value for the width of window.
+#' @param step Numeric value for the step size between consecutive windows.
+#'
+#' @return A data frame combining results from all time windows, with additional
+#' start and end columns indicating the window boundaries.
 calc_rolling_coxph <- function(
     data,
     time,
@@ -75,11 +120,7 @@ calc_rolling_coxph <- function(
     end,
     window,
     step) {
-  window_start <- seq(
-    from = start,
-    to = end - window,
-    by = step
-  )
+  window_start <- seq(from = start, to = end - window, by = step)
   window_end <- window_start + window
 
   df_list <- mapply(

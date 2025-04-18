@@ -1,4 +1,5 @@
 # %%
+# Attaching packages and functions
 library("readr")
 library("tidyr")
 library("dplyr")
@@ -13,10 +14,12 @@ source("functions/coxph_pairwise.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/04"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading UK Biobank data
 ukb_data <- read_csv("results/00/ukb_data.csv") |>
   mutate(
     plt_100u = platelet_count / 100,
@@ -31,6 +34,7 @@ ukb_data <- read_csv("results/00/ukb_data.csv") |>
   )
 
 # %%
+# Calculating Cox proportional hazards models for UK Biobank data
 ukb_coxph_df <- calc_coxph_pairwise(
   data = ukb_data,
   event_time_list = list(
@@ -47,9 +51,11 @@ ukb_coxph_df <- calc_coxph_pairwise(
   )
 )
 
+# Saving the results
 write_xlsx(ukb_coxph_df, file.path(output_dir, "ukb_coxph_forest.xlsx"))
 
 # %%
+# Preparing the forest plot data for UK Biobank
 ukb_forest_data <- ukb_coxph_df |>
   mutate(
     hr_fmt = sprintf("%.2f (%.2f - %.2f)", hr, hr_l95, hr_u95),
@@ -99,6 +105,7 @@ ukb_forest_data <- ukb_coxph_df |>
     )
   )
 
+# Preparing the forest layout data for UK Biobank
 ukb_forest_layout <- ukb_forest_data |>
   select(event_type, hr_fmt, ci_col, p_fmt) |>
   mutate(across(everything(), function(x) if_else(is.na(x), "", x))) |>
@@ -119,6 +126,7 @@ ukb_forest_layout <- ukb_forest_data |>
   })
 
 # %%
+# Setting up themes of forest plots
 theme <- forest_theme(
   core = list(bg_params = list(fill = c("white", "gray95"))),
   base_family = font_zh,
@@ -136,6 +144,8 @@ theme <- forest_theme(
   xaxis_gp = gpar(lwd = 1, cex = 0.8)
 )
 
+# %%
+# Plotting forest plots for UK Biobank data
 ukb_p <- forest(
   ukb_forest_layout,
   est = list(
@@ -167,6 +177,8 @@ ukb_p <- forest(
   ) |>
   add_border(part = "header", where = "bottom")
 
+# %%
+# Saving plots
 pdf(
   file.path(output_dir, "ukb_coxph_forest.pdf"),
   width = get_wh(ukb_p)[1],
@@ -179,6 +191,7 @@ dev.off()
 unlink("Rplots.pdf")
 
 # %%
+# Reading West China data
 hx_data <- read_csv("results/01/hx_data.csv") |>
   mutate(
     plt_100u = platelet_count / 100,
@@ -194,6 +207,7 @@ hx_data <- read_csv("results/01/hx_data.csv") |>
   )
 
 # %%
+# Calculating Cox proportional hazards models for West China data
 hx_coxph_df <- calc_coxph_pairwise(
   data = hx_data,
   event_time_list = list(
@@ -211,9 +225,11 @@ hx_coxph_df <- calc_coxph_pairwise(
   )
 )
 
+# Saving the results
 write_xlsx(hx_coxph_df, file.path(output_dir, "hx_coxph_forest.xlsx"))
 
 # %%
+# Preparing the forest plot data for West China
 hx_forest_data <- hx_coxph_df |>
   mutate(
     hr_fmt = sprintf("%.2f (%.2f - %.2f)", hr, hr_l95, hr_u95),
@@ -267,6 +283,7 @@ hx_forest_data <- hx_coxph_df |>
     )
   )
 
+# Preparing the forest layout data for West China
 hx_forest_layout <- hx_forest_data |>
   select(event_type, hr_fmt, ci_col, p_fmt) |>
   mutate(across(everything(), function(x) if_else(is.na(x), "", x))) |>
@@ -287,6 +304,7 @@ hx_forest_layout <- hx_forest_data |>
   })
 
 # %%
+# Plotting forest plots for West China data
 hx_p <- forest(
   hx_forest_layout,
   est = list(
@@ -319,6 +337,8 @@ hx_p <- forest(
   ) |>
   add_border(part = "header", where = "bottom")
 
+# %%
+# Saving plots
 pdf(
   file.path(output_dir, "hx_coxph_forest.pdf"),
   width = get_wh(hx_p)[1],

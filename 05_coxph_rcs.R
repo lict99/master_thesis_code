@@ -1,4 +1,5 @@
 # %%
+# Attaching packages and functions
 library("readr")
 library("dplyr")
 library("ggplot2")
@@ -10,10 +11,12 @@ source("functions/rcs_coxph.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/05"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading UK Biobank data
 ukb_data <- read_csv("results/00/ukb_data.csv") |>
   mutate(
     sex = factor(sex, levels = c("female", "male")),
@@ -26,6 +29,7 @@ ukb_data <- read_csv("results/00/ukb_data.csv") |>
   as.data.frame()
 
 # %%
+# Plotting restricted cubic splines for UK Biobank data
 for (event in c("os", "css")) {
   for (covar_set in c("set1", "set2")) {
     char_event <- switch(event,
@@ -61,6 +65,7 @@ for (event in c("os", "css")) {
 }
 
 # %%
+# Reading West China data
 hx_data <- read_csv("results/01/hx_data.csv") |>
   mutate(
     sex = factor(sex, levels = c("female", "male")),
@@ -74,6 +79,7 @@ hx_data <- read_csv("results/01/hx_data.csv") |>
   as.data.frame()
 
 # %%
+# Plotting restricted cubic splines for West China data
 for (event in c("os", "css", "dfs")) {
   for (covar_set in c("set1", "set2")) {
     char_event <- switch(event,

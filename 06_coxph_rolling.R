@@ -1,4 +1,5 @@
 # %%
+# Attaching packages and functions
 library("readr")
 library("dplyr")
 library("ggplot2")
@@ -10,10 +11,12 @@ source("functions/coxph_pairwise.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/06"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading UK Biobank data
 ukb_data <- read_csv("results/00/ukb_data.csv") |>
   mutate(
     plt_100u = platelet_count / 100,
@@ -26,6 +29,7 @@ ukb_data <- read_csv("results/00/ukb_data.csv") |>
   )
 
 # %%
+# Plotting rolling Cox proportional hazards models for UK Biobank data
 for (event in c("os", "css")) {
   for (covar_set in c("set1", "set2")) {
     covars <- switch(covar_set,

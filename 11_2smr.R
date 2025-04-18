@@ -69,6 +69,10 @@ mr_results <- lapply(
   function(x) {
     set.seed(1)
 
+    valid_iv <- x[x$mr_keep, , drop = FALSE] |>
+      mutate(fmt_eaf_exp = sprintf("%.2f", eaf.exposure)) |>
+      arrange(as.numeric(chr.exposure), as.numeric(pos.exposure))
+
     results <- mr(
       x,
       method_list = c("mr_ivw", "mr_egger_regression", "mr_weighted_median")
@@ -129,6 +133,7 @@ mr_results <- lapply(
 
     return(
       list(
+        valid_iv = valid_iv,
         results = results,
         heterogeneity = heterogeneity,
         pleiotropy = pleiotropy,
@@ -139,7 +144,7 @@ mr_results <- lapply(
 )
 
 # %%
-for (idx in c("results", "heterogeneity", "pleiotropy", "presso")) {
+for (idx in c("valid_iv", "results", "heterogeneity", "pleiotropy", "presso")) {
   write_xlsx(
     lapply(mr_results, function(x) x[[idx]]),
     file.path(output_dir, sprintf("mr_%s.xlsx", idx))

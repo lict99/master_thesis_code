@@ -5,7 +5,7 @@ library("readr")
 library("dplyr")
 library("openxlsx2")
 
-source("functions/table1_func.R", local = TRUE)
+source("functions/table1.R", local = TRUE)
 
 # %%
 # Setting up the output directory

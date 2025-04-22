@@ -1,4 +1,5 @@
 # %%
+# Attaching packages
 library("readr")
 library("dplyr")
 library("Qtlizer")
@@ -6,10 +7,12 @@ library("openxlsx2")
 library("TwoSampleMR")
 
 # %%
+# Setting up output directory
 output_dir <- "results/14"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Loading IV information
 load("results/11/mr_iv_info.rda")
 
 iv_list <- lapply(
@@ -17,6 +20,8 @@ iv_list <- lapply(
   function(x) x[x[["mr_keep"]], , drop = FALSE][["SNP"]]
 )
 
+# Checking if the IVs are identical across OS, CSS, and DFS
+# We make sure that the IVs are identical and use one of them
 if (identical(iv_list$os, iv_list$css) && identical(iv_list$os, iv_list$dfs)) {
   iv <- iv_list$os
 } else {
@@ -24,6 +29,7 @@ if (identical(iv_list$os, iv_list$css) && identical(iv_list$os, iv_list$dfs)) {
 }
 
 # %%
+# Getting and saving eQTL information from Qtlizer database
 if (file.exists("data/cache/eqtl_query.csv")) {
   eqtl_query <- read_csv("data/cache/eqtl_query.csv")
 } else {
@@ -32,6 +38,7 @@ if (file.exists("data/cache/eqtl_query.csv")) {
 }
 
 # %%
+# Filtering eQTL information for GTEx v8 Colon tissues
 eqtl_gtex_colon <- eqtl_query |>
   filter(
     source == "GTEx v8",
@@ -42,6 +49,7 @@ eqtl_gtex_colon <- eqtl_query |>
   arrange(as.numeric(chr), as.numeric(var_pos_hg19))
 
 # %%
+# Reading GTEx v8 eQTL data for Colon tissues
 gtex_sigm <- read_delim(
   "data/gtex_v8_eqtl/Colon_Sigmoid.v8.signif_variant_gene_pairs.txt.gz"
 ) |>
@@ -53,9 +61,12 @@ gtex_tran <- read_delim(
   mutate(gene_id = substr(gene_id, 1, 15))
 
 # %%
+# Extracting eQTL information and checking if the eQTL information is consistent
+# with the GTEx database
 eqtl_info <- lapply(
   seq_len(nrow(eqtl_gtex_colon)),
   function(i) {
+    # Information from the Qtlizer database
     snp <- eqtl_gtex_colon[i, "sentinel", drop = TRUE]
     chr <- eqtl_gtex_colon[i, "chr", drop = TRUE]
     pos_hg19 <- eqtl_gtex_colon[i, "var_pos_hg19", drop = TRUE]
@@ -76,8 +87,9 @@ eqtl_info <- lapply(
       stop("Unknown tissue", call. = FALSE)
     }
 
-    # nea is ref, ea is alt
+    # Information from the GTEx database
     # {chr}_{pos_first_ref_base}_{ref_seq}_{alt_seq}_b38
+    # nea is ref, ea is alt
     variant_id <- paste(paste0("chr", chr), pos_hg38, nea, ea, "b38", sep = "_")
 
     db_idx <- variant_id == database$variant_id & gene_id == database$gene_id
@@ -90,10 +102,12 @@ eqtl_info <- lapply(
     se <- database[db_idx, "slope_se", drop = TRUE] |> as.numeric()
     pval <- database[db_idx, "pval_nominal", drop = TRUE] |> as.numeric()
 
+    #  Checking if beta are equal
     if (!isTRUE(all.equal(beta, slope, tolerance = 1e-3))) {
       stop("Beta are not equal", call. = FALSE)
     }
 
+    # Checking if p-values are equal
     if (!isTRUE(all.equal(p, pval, tolerance = 1e-3))) {
       stop("P-values are not equal", call. = FALSE)
     }
@@ -101,6 +115,7 @@ eqtl_info <- lapply(
     pval_threshold <- database[db_idx, "pval_nominal_threshold", drop = TRUE] |>
       as.numeric()
 
+    # Checking if p-value is significant
     if (pval > pval_threshold) {
       stop("Not significant variant-gene pair", call. = TRUE)
     }
@@ -126,9 +141,11 @@ eqtl_info <- lapply(
 )
 
 # %%
+# Saving eQTL information
 write_xlsx(bind_rows(eqtl_info), file = file.path(output_dir, "eqtl_info.xlsx"))
 
 # %%
+# Formatting eQTL data as exposure data
 eqtl_exp_data <- lapply(
   eqtl_info,
   function(eqtl) {
@@ -157,9 +174,11 @@ eqtl_exp_data <- lapply(
 )
 
 # %%
+# Loading West China survival GWAS data as outcome data
 load("results/11/gwas_coxph.rda")
 
 # %%
+# Performing Mendelian randomization by Wald ratio method
 eqtl_mr <- lapply(
   gwas_coxph,
   function(oct_data) {
@@ -181,4 +200,5 @@ eqtl_mr <- lapply(
 )
 
 # %%
+# Saving eQTL Mendelian randomization results
 write_xlsx(eqtl_mr, file = file.path(output_dir, "eqtl_mr.xlsx"))

@@ -1,4 +1,5 @@
 # %%
+# Attach packages and functions
 library("openxlsx2")
 library("org.Hs.eg.db")
 library("clusterProfiler")
@@ -11,20 +12,25 @@ source("functions/font_config.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/16"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading eQTL information
 eqtl_genes <- read_xlsx("results/14/eqtl_info.xlsx")
 
 # %%
+# Performing GO enrichment analysis
 go <- enrichGO(
   eqtl_genes[["gene_id"]],
   OrgDb = "org.Hs.eg.db",
   keyType = "ENSEMBL",
   ont = "BP"
 )
+
 # %%
+# Plotting GO enrichment results
 p <- dotplot(go) +
   labs(
     x = "基因比例",
@@ -48,6 +54,7 @@ p <- dotplot(go) +
     axis.ticks = element_blank(),
     axis.text = element_markdown()
   )
+
 ggsave(
   file.path(output_dir, "enrichment.pdf"),
   plot = p,

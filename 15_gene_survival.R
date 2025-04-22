@@ -1,4 +1,5 @@
 # %%
+# Attach packages and functions
 library("openxlsx2")
 library("readr")
 library("dplyr")
@@ -13,13 +14,16 @@ source("functions/font_config.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/15"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading eQTL information
 eqtl_genes <- read_xlsx("results/14/eqtl_info.xlsx")
 
 # %%
+# Reading TCGA clinical data
 surv_data <- read_xlsx("data/tcga/clinical_data.xlsx", start_col = 2) |>
   mutate(
     barcode = paste(bcr_patient_barcode, "01A", sep = "-"),
@@ -32,6 +36,7 @@ surv_data <- read_xlsx("data/tcga/clinical_data.xlsx", start_col = 2) |>
   )
 
 # %%
+# Combing TCGA COAD and READ gene expression data
 gene_expr <- lapply(
   c("COAD", "READ"),
   function(x) {
@@ -57,17 +62,20 @@ gene_expr <- lapply(
   bind_rows()
 
 # %%
+# Merging gene expression data with clinical data
 fit_data <- inner_join(
   gene_expr,
   surv_data,
   by = join_by(sample == barcode)
 )
 
+# Checking if the data contain only COAD and READ
 if (!all(fit_data$type %in% c("COAD", "READ"))) {
   stop("Unknown cancer type", call. = FALSE)
 }
 
 # %%
+# Calculating hazard ratio for each gene
 hr_genes <- lapply(
   list(os = "OS", dss = "DSS", dfi = "DFI", pfi = "PFI"),
   function(event) {
@@ -85,6 +93,7 @@ hr_genes <- lapply(
           ) |>
           as.data.frame() |>
           (function(x) {
+            # We group gene expression data by median
             x["group"] <- if_else(x[[gene_id]] > median(x[[gene_id]]), 1, 0)
             return(x)
           })()
@@ -123,8 +132,11 @@ hr_genes <- lapply(
   }
 )
 
+# Saving the results
 write_xlsx(hr_genes, file.path(output_dir, "hr_genes.xlsx"))
+
 # %%
+# Plotting hazard ratios of genes for each event
 for (plot_data in hr_genes) {
   event <- plot_data$event[1]
 

@@ -1,4 +1,5 @@
 # %%
+# Attaching packages and functions
 library("readr")
 library("dplyr")
 library("nlmr")
@@ -11,15 +12,16 @@ source("functions/font_config.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/13"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading PRS data
 prs_data <- read_csv("results/12/prs.csv")
 
-str(prs_data)
-
 # %%
+# Reading West China data
 hx_data <- read_csv("results/01/hx_data.csv") |>
   mutate(
     sex_male = case_match(
@@ -30,15 +32,14 @@ hx_data <- read_csv("results/01/hx_data.csv") |>
     )
   ) |>
   select(id, platelet_count, age, sex_male, os_3yr, css_3yr, dfs_3yr)
-glimpse(hx_data)
 
 # %%
+# Merging PRS data with West China data
 nlmr_data <- left_join(prs_data, hx_data, by = join_by(iid == id)) |>
   as.data.frame()
 
-glimpse(nlmr_data)
-
 # %%
+# Performing nonlinear Mendelian randomization
 for (event in c("os", "css", "dfs")) {
   event_char <- switch(event,
     os = "总体生存期",
@@ -48,7 +49,8 @@ for (event in c("os", "css", "dfs")) {
 
   for (prs in c("wprs", "uprs")) {
     set.seed(1)
-
+    # Constructing the data frame for nonlinear Mendelian randomization
+    # We use the 3-year event data as the outcome
     data <- data.frame(
       y = nlmr_data[[paste0(event, "_3yr")]],
       x = nlmr_data$platelet_count,
@@ -58,6 +60,7 @@ for (event in c("os", "css", "dfs")) {
     ) |>
       na.omit()
 
+    # Fitting fractional polynomial model
     fit <- fracpoly_mr(
       y = data$y,
       x = data$x,
@@ -71,11 +74,9 @@ for (event in c("os", "css", "dfs")) {
       ref = median(hx_data$platelet_count)
     )
 
-    nlmr:::fracpoly_figure
-    str(plot_data)
-
     plot_data <- fit$figure$data
 
+    # P value of nonlinear test
     pval <- if_else(
       fit$p_tests[, "fp"] < 0.001,
       "P 值 < 0.001",

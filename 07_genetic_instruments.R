@@ -1,13 +1,16 @@
 # %%
+# Attaching packages and functions
 library("readr")
 library("dplyr")
 library("TwoSampleMR")
 
 # %%
+# Setting up output directory
 output_dir <- "results/07"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading exposure data from OpenGWAS
 exposure_data <- read_csv("data/snp/open_gwas/ebi-a-GCST90002358.csv") |>
   filter(pval.exposure < 5e-8 & between(eaf.exposure, 0.05, 0.95)) |>
   as.data.frame() |>
@@ -37,8 +40,10 @@ exposure_data <- read_csv("data/snp/open_gwas/ebi-a-GCST90002358.csv") |>
   )
 
 # %%
+# Saving exposure data
 save(exposure_data, file = file.path(output_dir, "exposure_data.rda"))
 
+# Saving SNPs
 write_delim(
   exposure_data["SNP"],
   file = file.path(output_dir, "iv.txt"),

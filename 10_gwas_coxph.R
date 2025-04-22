@@ -1,4 +1,5 @@
 # %%
+# Attaching packages
 library("readr")
 library("dplyr")
 library("GWASTools")
@@ -6,10 +7,12 @@ library("SNPRelate")
 library("survival")
 
 # %%
+# Setting up output directory
 output_dir <- "results/10"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Reading West China data
 hx_data <- read_csv("results/01/hx_data.csv") |>
   mutate(
     sex_male = case_match(
@@ -22,6 +25,7 @@ hx_data <- read_csv("results/01/hx_data.csv") |>
   select(id, age, sex_male, os, os_time, css, css_time, dfs, dfs_time)
 
 # %%
+# Reading PCA data
 pca <- read_delim(
   "results/09/pca5.eigenvec",
   delim = " ",
@@ -29,6 +33,7 @@ pca <- read_delim(
 )
 
 # %%
+# Merging PCA data with West China data
 hx_df <- inner_join(
   pca,
   hx_data,
@@ -37,6 +42,7 @@ hx_df <- inner_join(
   as.data.frame()
 
 # %%
+# Reading SNP sample data
 plink_samples <- read_delim(
   "results/09/data_final.fam",
   delim = " ",
@@ -45,14 +51,17 @@ plink_samples <- read_delim(
   as.data.frame()
 
 # %%
+# Checking if sample IDs match
 if (!identical(hx_df$iid, plink_samples[[1]])) {
   stop("Sample IDs do not match", call. = FALSE)
 }
 
 # %%
+# Performing Cox proportional hazards regression for selected SNPs
 for (event in c("os", "css", "dfs")) {
   gds_file <- tempfile(fileext = ".gds")
 
+  # transforming the PLINK bed files to GDS format
   snpgdsBED2GDS(
     bed.fn = "results/09/data_final.bed",
     fam.fn = "results/09/data_final.fam",
@@ -66,6 +75,7 @@ for (event in c("os", "css", "dfs")) {
     XYchromCode = 25L
   )
 
+  # Extraction of SNP information
   gt_info <- data.frame(
     snp_id = getSnpID(gds),
     chromosome = getChromosome(gds),
@@ -74,17 +84,21 @@ for (event in c("os", "css", "dfs")) {
     other_allele = getAlleleB(gds)
   )
 
+  # Checking if sample IDs match
   scan_id <- getScanID(gds)
   if (!identical(scan_id, hx_df[["iid"]])) {
     stop("Not aligned with sample IDs", call. = FALSE)
   }
 
+  # Setting up covariates
   covars <- c("age", "sex_male", paste0("pc", 1:5))
 
+  # selecting necessary columns
   fit_df <- hx_df |>
     select(all_of(c(covars, event, paste0(event, "_time")))) |>
     as.data.frame()
 
+  # Getting genotype coded by number of allele A
   gt_a <- getGenotype(
     gds,
     snp = c(1, -1),
@@ -94,15 +108,18 @@ for (event in c("os", "css", "dfs")) {
   ) |>
     as.data.frame()
 
+  # Releasing resources
   close(gds)
   unlink(gds_file)
 
+  # Performing Cox proportional hazards regression
   coxph_list <- lapply(
     gt_a,
     function(gt) {
       df <- cbind(data.frame(gt = gt), fit_df)
       df <- na.omit(df)
 
+      # Calculating effect allele frequency
       eaf <- sum(df[["gt"]]) / (2 * nrow(df))
 
       fml <- as.formula(
@@ -132,6 +149,7 @@ for (event in c("os", "css", "dfs")) {
 
   model_results <- cbind(gt_info, do.call("rbind", coxph_list))
 
+  # Saving results
   write_csv(
     model_results,
     file = file.path(output_dir, sprintf("gwas_%s_coxph.csv", event))

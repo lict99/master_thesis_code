@@ -1,4 +1,5 @@
 # %%
+# Attaching packages and functions
 library("readr")
 library("dplyr")
 library("TwoSampleMR")
@@ -11,13 +12,16 @@ source("functions/font_config.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/11"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Loading exposure data
 load("results/07/exposure_data.rda")
 
 # %%
+# Loading outcome data
 gwas_coxph <- lapply(
   list(os = "os", css = "css", dfs = "dfs"),
   function(x) {
@@ -50,29 +54,35 @@ gwas_coxph <- lapply(
   }
 )
 
+# Saving outcome data
 save(gwas_coxph, file = file.path(output_dir, "gwas_coxph.rda"))
 
 # %%
+# Harmonizing data
 mr_iv_info <- lapply(
   gwas_coxph,
   function(x) harmonise_data(exposure_data, x, action = 2)
 )
 
+# Saving harmonized data
 save(
   mr_iv_info,
   file = file.path(output_dir, "mr_iv_info.rda")
 )
 
 # %%
+# Running MR analysis
 mr_results <- lapply(
   mr_iv_info,
   function(x) {
     set.seed(1)
 
+    # Getting valid IVs
     valid_iv <- x[x$mr_keep, , drop = FALSE] |>
       mutate(fmt_eaf_exp = sprintf("%.2f", eaf.exposure)) |>
       arrange(as.numeric(chr.exposure), as.numeric(pos.exposure))
 
+    # Calculating MR results
     results <- mr(
       x,
       method_list = c("mr_ivw", "mr_egger_regression", "mr_weighted_median")
@@ -83,12 +93,14 @@ mr_results <- lapply(
         pval_fmt = if_else(pval < 0.001, "< 0.001", sprintf("%.3f", pval))
       )
 
+    # Performing heterogeneity analysis
     heterogeneity <- mr_heterogeneity(x) |>
       mutate(
         q_fmt = sprintf("%.2f", Q),
         q_pval_fmt = if_else(Q_pval < 0.001, "< 0.001", sprintf("%.3f", Q_pval))
       )
 
+    # Performing pleiotropy analysis
     pleiotropy <- mr_pleiotropy_test(x) |>
       mutate(
         egger_intercept_fmt = sprintf("%.2f", egger_intercept),
@@ -96,6 +108,7 @@ mr_results <- lapply(
         pval_fmt = if_else(pval < 0.001, "< 0.001", sprintf("%.3f", pval))
       )
 
+    # Performing MR-PRESSO analysis
     presso <- run_mr_presso(x)[[1]][["MR-PRESSO results"]] |>
       with({
         `%|%` <- function(x, y) if (inherits(x, "try-error")) y else x
@@ -144,6 +157,7 @@ mr_results <- lapply(
 )
 
 # %%
+# Saving MR analysis results
 for (idx in c("valid_iv", "results", "heterogeneity", "pleiotropy", "presso")) {
   write_xlsx(
     lapply(mr_results, function(x) x[[idx]]),
@@ -152,6 +166,7 @@ for (idx in c("valid_iv", "results", "heterogeneity", "pleiotropy", "presso")) {
 }
 
 # %%
+# Plotting MR scatter and leave-one-out plots
 for (i in c("os", "css", "dfs")) {
   i_char <- switch(i,
     os = "总体生存期",
@@ -160,6 +175,7 @@ for (i in c("os", "css", "dfs")) {
     stop("Unknown event", call. = FALSE)
   )
 
+  # MR scatter plot
   p_scatter <- mr_scatter_plot(mr_results[[i]]$results, mr_iv_info[[i]])[[1]] +
     labs(
       x = "遗传变异对血小板计数的效应",
@@ -188,6 +204,7 @@ for (i in c("os", "css", "dfs")) {
     height = 4
   )
 
+  # MR leave-one-out plot
   p_loo <- mr_leaveoneout_plot(mr_leaveoneout(mr_iv_info[[i]]))[[1]] +
     scale_color_manual(values = c("black", "#BC3C29FF")) +
     labs(

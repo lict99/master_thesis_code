@@ -1,4 +1,5 @@
 # %%
+# Attaching packages and functions
 library("readr")
 library("dplyr")
 library("ggplot2")
@@ -11,13 +12,16 @@ source("functions/font_config.R", local = TRUE)
 showtext_auto()
 
 # %%
+# Setting up output directory
 output_dir <- "results/12"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
+# Loading IV infomation
 load("results/11/mr_iv_info.rda")
 
 # %%
+# Calculation of PRS in various events
 mr_prs <- lapply(
   mr_iv_info,
   function(x) {
@@ -26,6 +30,7 @@ mr_prs <- lapply(
     iv_file <- tempfile(fileext = ".txt")
     prs_dir <- tempdir()
 
+    # Transforming allele and beta to positive direction
     iv_df <- data.frame(
       snp = data$SNP,
       allele = ifelse(
@@ -44,6 +49,7 @@ mr_prs <- lapply(
       col_names = FALSE
     )
 
+    # Calculating weighted PRS
     system(
       sprintf(
         "plink --bfile %s --score %s 1 2 3 sum --out %s",
@@ -53,6 +59,7 @@ mr_prs <- lapply(
       )
     )
 
+    # Calculating unweighted PRS
     system(
       sprintf(
         "plink --bfile %s --score %s 1 2 4 sum --out %s",
@@ -62,9 +69,11 @@ mr_prs <- lapply(
       )
     )
 
+    # Reading PRS results
     wprs <- read_table(file.path(prs_dir, "wprs.profile"))
     uprs <- read_table(file.path(prs_dir, "uprs.profile"))
 
+    # Checking if IIDs are identical
     if (!identical(wprs$IID, uprs$IID)) {
       stop("Not identical IID in PRS", call. = FALSE)
     }
@@ -80,24 +89,31 @@ mr_prs <- lapply(
 )
 
 # %%
+# Checking if PRS of various events are identical
+# We make sure that the PRS for OS, CSS, and DFS are identical
+# and then we use one of them for further analysis
 if (identical(mr_prs$os, mr_prs$css) && identical(mr_prs$os, mr_prs$dfs)) {
   prs_data <- mr_prs$os
 } else {
   stop("Not identical PRS between OS, CSS, and DFS", call. = FALSE)
 }
 
+# Saving PRS data
 write_csv(prs_data, file.path(output_dir, "prs.csv"))
 
 # %%
+# Reading West China data
 hx_data <- read_csv("results/01/hx_data.csv") |>
   select(id, platelet_count) |>
   as.data.frame()
 
 # %%
+# Merging PRS data with West China data for plotting
 plot_data <- left_join(prs_data, hx_data, by = join_by(iid == id)) |>
   as.data.frame()
 
 # %%
+# Plotting PRS and platelet count
 for (prs in c("wprs", "uprs")) {
   prs_char <- switch(prs,
     wprs = "加权多基因风险评分",
@@ -114,8 +130,10 @@ for (prs in c("wprs", "uprs")) {
     )
   )
 
+  # F statistic of model
   fval <- sprintf("F = %.2f", fit$fstatistic[1])
 
+  # P value of model
   pval <- pf(
     fit$fstatistic[1],
     fit$fstatistic[2],

@@ -31,7 +31,7 @@ gwas_coxph <- lapply(
       stop("p-value < 5e-8 for", x)
     }
 
-    formated_data <- data |>
+    formatted_data <- data |>
       mutate(phenotype = toupper(x), id = x) |>
       as.data.frame() |>
       format_data(
@@ -50,7 +50,7 @@ gwas_coxph <- lapply(
         samplesize_col = "n"
       )
 
-    return(formated_data)
+    return(formatted_data)
   }
 )
 

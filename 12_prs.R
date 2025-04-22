@@ -17,7 +17,7 @@ output_dir <- "results/12"
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # %%
-# Loading IV infomation
+# Loading IV information
 load("results/11/mr_iv_info.rda")
 
 # %%

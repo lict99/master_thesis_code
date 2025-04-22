@@ -7,11 +7,9 @@ requires-python = ">=3.12"
 dependencies = [
     "fastexcel>=0.12.1",
     "pandas>=2.2.3",
-    "polars>=1.20.0",
+    "polars==1.20.0",
     "pyarrow>=19.0.0",
 ]
 
 [dependency-groups]
-dev = [
-    "ipykernel>=6.29.5",
-]
+dev = ["ipykernel>=6.29.5"]

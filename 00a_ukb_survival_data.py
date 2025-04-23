@@ -12,8 +12,7 @@ from functions import surv_expr
 # %%
 # Setting up the directory for the output
 output_dir: Path = Path("results/00")
-if not output_dir.exists():
-    output_dir.mkdir()
+output_dir.mkdir(parents=True, exist_ok=True)
 
 # %%
 # Listing all data files

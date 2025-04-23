@@ -8,8 +8,7 @@ from polars import col, lit
 # %%
 # Setting up the directory for the output
 output_dir: Path = Path("results/01")
-if not output_dir.exists():
-    output_dir.mkdir()
+output_dir.mkdir(parents=True, exist_ok=True)
 
 # %%
 # Survival data of CRC patients in West China

@@ -63,7 +63,9 @@ ukb_forest_data <- ukb_coxph_df |>
   ) |>
   pivot_wider(
     names_from = target,
-    values_from = c(coef, se, p_value, hr, hr_l95, hr_u95, hr_fmt, p_fmt)
+    values_from = c(
+      coef, se, p_value, hr, hr_l95, hr_u95, ph_pval, hr_fmt, p_fmt
+    )
   ) |>
   mutate(
     hr_fmt = paste(
@@ -237,7 +239,9 @@ hx_forest_data <- hx_coxph_df |>
   ) |>
   pivot_wider(
     names_from = target,
-    values_from = c(coef, se, p_value, hr, hr_l95, hr_u95, hr_fmt, p_fmt)
+    values_from = c(
+      coef, se, p_value, hr, hr_l95, hr_u95, ph_pval, hr_fmt, p_fmt
+    )
   ) |>
   mutate(
     hr_fmt = paste(

@@ -20,6 +20,7 @@
 #' intervals.
 #' 3. p_value: p-value from likelihood ratio test comparing linear vs.
 #' non-linear models.
+#' 4. ph_pval: global p-value from proportional hazard assumption test.
 .calc_coxph_rcs <- function(
     data,
     time,
@@ -63,8 +64,10 @@
 
   pval <- lmtest::lrtest(linear_model, rcs_model)[2, "Pr(>Chisq)"]
 
+  hr_obj <- smoothHR::smoothHR(data = data, coxfit = rcs_model)
+
   points <- smoothHR::predict.HR(
-    object = smoothHR::smoothHR(data = data, coxfit = rcs_model),
+    object = hr_obj,
     predictor = target,
     prob = 0.5,
     prediction.values = seq(
@@ -81,7 +84,12 @@
   points["hr_u95"] <- exp(points["upper .95"])
 
   return(
-    list(target_value = data[[target]], prediction = points, p_value = pval)
+    list(
+      target_value = data[[target]],
+      prediction = points,
+      p_value = pval,
+      ph_pval = hr_obj$phtest$table["GLOBAL", "p"]
+    )
   )
 }
 
@@ -135,6 +143,17 @@ plot_coxph_rcs <- function(
   color_hr <- "#BC3C29FF"
   color_ci <- "black"
 
+  nl_pval_fmt <- ifelse(
+    rcs$p_value < 0.001,
+    "< 0.001",
+    sprintf("= %.3f", rcs$p_value)
+  )
+  ph_pval_fmt <- ifelse(
+    rcs$ph_pval < 0.001,
+    "< 0.001",
+    sprintf("= %.3f", rcs$ph_pval)
+  )
+
   .data <- ggplot2::.data
   p <- ggplot2::ggplot() +
     ggplot2::geom_ribbon(
@@ -178,6 +197,11 @@ plot_coxph_rcs <- function(
     ggplot2::labs(
       x = xlab,
       y = ylab,
+      subtitle = sprintf(
+        "非线性 P 值 %s\n比例风险假设 P 值 %s",
+        nl_pval_fmt,
+        ph_pval_fmt
+      ),
       fill = NULL,
       color = NULL
     ) +
@@ -197,25 +221,12 @@ plot_coxph_rcs <- function(
       values = c(color_hr, color_ci),
       labels = c("风险比", "95% 置信区间")
     ) +
-    ggplot2::annotate(
-      geom = "label",
-      x = min(target_density$x),
-      y = hr_limits[2],
-      label = ifelse(
-        rcs$p_value < 0.001,
-        "P 值 < 0.001",
-        sprintf("P 值 = %.3f", rcs$p_value)
-      ),
-      label.size = 0,
-      family = font_family,
-      hjust = 0,
-      vjust = 0
-    ) +
     ggplot2::theme_classic(base_family = font_family) +
     ggplot2::theme(
-      legend.position = "top",
+      legend.position = "bottom",
       axis.text = ggplot2::element_text(color = "black"),
-      axis.title = ggtext::element_markdown()
+      axis.title = ggtext::element_markdown(),
+      plot.subtitle = ggplot2::element_text(size = 8)
     )
 
   return(p)

@@ -26,7 +26,11 @@
       paste(c(target, covariates), collapse = " + ")
     )
   )
-  model <- summary(survival::coxph(formula = fml, data = data))
+
+  fit <- survival::coxph(formula = fml, data = data)
+  model <- summary(fit)
+  ph_pval <- survival::cox.zph(fit)$table["GLOBAL", "p"]
+
   nm_target <- grep(
     paste0("^", target),
     rownames(model$coefficients),
@@ -43,7 +47,8 @@
     p_value = model$coefficients[nm_target, "Pr(>|z|)"],
     hr = model$conf.int[nm_target, "exp(coef)"],
     hr_l95 = model$conf.int[nm_target, "lower .95"],
-    hr_u95 = model$conf.int[nm_target, "upper .95"]
+    hr_u95 = model$conf.int[nm_target, "upper .95"],
+    ph_pval = ph_pval
   )
 
   return(df)

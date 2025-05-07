@@ -15,7 +15,7 @@
 #' @param ... Additional arguments passed to [survminer::ggsurvplot()].
 #'
 #' @return A `patchwork` object combining the survival plot and the risk table.
-#' @note This is a high coupled funtion to control workflow.
+#' @note This is a high coupled function to control workflow.
 plot_ggsurv <- function(
   fit,
   legend.title,

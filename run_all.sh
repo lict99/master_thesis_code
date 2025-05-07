@@ -23,9 +23,9 @@ run_script() {
     local base_name
     base_name=$(basename "$script")
 
-    log "==============================================="
+    log "================================================================================"
     log "Running $base_name ($(date))"
-    log "-----------------------------------------------"
+    log "--------------------------------------------------------------------------------"
 
     case "$script" in
     *.R)
@@ -33,8 +33,8 @@ run_script() {
         Rscript "$script" 2>&1 | tee -a "$LOG_FILE"
         ;;
     *.py)
-        log "Executing with python: $script"
-        python "$script" 2>&1 | tee -a "$LOG_FILE"
+        log "Executing with uv (python): $script"
+        uv run "$script" 2>&1 | tee -a "$LOG_FILE"
         ;;
     *.sh)
         log "Executing with bash: $script"
@@ -48,20 +48,23 @@ run_script() {
 
     # Check if the command was successful
     if [ "${PIPESTATUS[0]}" -eq 0 ]; then
-        log "-----------------------------------------------"
+        log "--------------------------------------------------------------------------------"
         log "SUCCESS: $base_name completed successfully"
-        log "==============================================="
+        log "================================================================================"
         return 0
     else
-        log "-----------------------------------------------"
+        log "--------------------------------------------------------------------------------"
         log "ERROR: $base_name failed with exit code ${PIPESTATUS[0]}"
-        log "==============================================="
+        log "================================================================================"
         return 1
     fi
 }
 
 # Main function
 main() {
+    # Record start time
+    START_TIME=$(date +%s)
+
     log "Starting analysis pipeline at $(date)"
     log "Log file: $LOG_FILE"
 
@@ -87,6 +90,11 @@ main() {
     for script in $SCRIPTS; do
         if ! run_script "$script"; then
             log "Pipeline stopped due to error in $(basename "$script")"
+            # Calculate runtime even if there was an error
+            END_TIME=$(date +%s)
+            TOTAL_TIME=$((END_TIME - START_TIME))
+            TOTAL_MINUTES=$(echo "$TOTAL_TIME / 60" | bc -l)
+            log "Total runtime: $(printf "%.2f" "$TOTAL_MINUTES") minutes"
             exit 1
         fi
 
@@ -94,6 +102,12 @@ main() {
     done
 
     log "All analysis scripts completed successfully at $(date)"
+
+    # Calculate and log total runtime
+    END_TIME=$(date +%s)
+    TOTAL_TIME=$((END_TIME - START_TIME))
+    TOTAL_MINUTES=$(echo "$TOTAL_TIME / 60" | bc -l)
+    log "Total runtime: $(printf "%.2f" "$TOTAL_MINUTES") minutes"
 }
 
 # Run the main function

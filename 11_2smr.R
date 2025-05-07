@@ -6,6 +6,7 @@ library("TwoSampleMR")
 library("ggplot2")
 library("showtext")
 library("openxlsx2")
+library("future.apply")
 
 source("functions/font_config.R", local = TRUE)
 
@@ -72,7 +73,9 @@ save(
 
 # %%
 # Running MR analysis
-mr_results <- lapply(
+plan(multisession)
+
+mr_results <- future_lapply(
   mr_iv_info,
   function(x) {
     set.seed(1)
@@ -153,7 +156,8 @@ mr_results <- lapply(
         presso = presso
       )
     )
-  }
+  },
+  future.seed = TRUE
 )
 
 # %%

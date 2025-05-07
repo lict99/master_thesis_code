@@ -31,8 +31,18 @@ surv_data <- read_xlsx("data/tcga/clinical_data.xlsx", start_col = 2) |>
     gender_male = case_match(gender, "MALE" ~ 1, "FEMALE" ~ 0)
   ) |>
   select(
-    barcode, type, age, gender_male,
-    OS, OS.time, DSS, DSS.time, DFI, DFI.time, PFI, PFI.time
+    barcode,
+    type,
+    age,
+    gender_male,
+    OS,
+    OS.time,
+    DSS,
+    DSS.time,
+    DFI,
+    DFI.time,
+    PFI,
+    PFI.time
   )
 
 # %%
@@ -140,7 +150,8 @@ write_xlsx(hr_genes, file.path(output_dir, "hr_genes.xlsx"))
 for (plot_data in hr_genes) {
   event <- plot_data$event[1]
 
-  event_char <- switch(event,
+  event_char <- switch(
+    event,
     OS = "总体生存期",
     DSS = "癌症特异性生存期",
     DFI = "无疾病生存期",

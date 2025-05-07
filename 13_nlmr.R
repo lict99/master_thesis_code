@@ -41,7 +41,8 @@ nlmr_data <- left_join(prs_data, hx_data, by = join_by(iid == id)) |>
 # %%
 # Performing nonlinear Mendelian randomization
 for (event in c("os", "css", "dfs")) {
-  event_char <- switch(event,
+  event_char <- switch(
+    event,
     os = "总体生存期",
     css = "癌症特异性生存期",
     dfs = "无疾病生存期"

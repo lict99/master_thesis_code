@@ -137,7 +137,8 @@ mr_results <- future_lapply(
 
         data.frame(
           global_rss = sprintf("%.2f", `Global Test`$RSSobs),
-          global_pvalue = if_else(`Global Test`$Pvalue < 0.001,
+          global_pvalue = if_else(
+            `Global Test`$Pvalue < 0.001,
             "< 0.001",
             sprintf("%.3f", `Global Test`$Pvalue)
           ),
@@ -172,7 +173,8 @@ for (idx in c("valid_iv", "results", "heterogeneity", "pleiotropy", "presso")) {
 # %%
 # Plotting MR scatter and leave-one-out plots
 for (i in c("os", "css", "dfs")) {
-  i_char <- switch(i,
+  i_char <- switch(
+    i,
     os = "总体生存期",
     css = "癌症特异性生存期",
     dfs = "无疾病生存期",

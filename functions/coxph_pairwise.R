@@ -12,11 +12,12 @@
 #'
 #' @return A data frame with model results.
 .calc_coxph <- function(
-    data,
-    time,
-    event,
-    target,
-    covariates) {
+  data,
+  time,
+  event,
+  target,
+  covariates
+) {
   loadNamespace("survival")
 
   fml <- as.formula(
@@ -67,10 +68,11 @@
 #'
 #' @return A data frame combining results from all models.
 calc_coxph_pairwise <- function(
-    data,
-    event_time_list,
-    targets,
-    covariates_list) {
+  data,
+  event_time_list,
+  targets,
+  covariates_list
+) {
   product_df <- expand.grid(
     target = targets,
     covariates = covariates_list,
@@ -115,16 +117,17 @@ calc_coxph_pairwise <- function(
 #' @return A data frame combining results from all time windows, with additional
 #' start and end columns indicating the window boundaries.
 calc_rolling_coxph <- function(
-    data,
-    time,
-    event,
-    target,
-    covariates,
-    rolling_by,
-    start,
-    end,
-    window,
-    step) {
+  data,
+  time,
+  event,
+  target,
+  covariates,
+  rolling_by,
+  start,
+  end,
+  window,
+  step
+) {
   window_start <- seq(from = start, to = end - window, by = step)
   window_end <- window_start + window
 

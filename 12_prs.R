@@ -115,7 +115,8 @@ plot_data <- left_join(prs_data, hx_data, by = join_by(iid == id)) |>
 # %%
 # Plotting PRS and platelet count
 for (prs in c("wprs", "uprs")) {
-  prs_char <- switch(prs,
+  prs_char <- switch(
+    prs,
     wprs = "加权多基因风险评分",
     uprs = "非加权多基因风险评分"
   )
@@ -211,7 +212,10 @@ for (prs in c("wprs", "uprs")) {
       axis.ticks.y = element_blank()
     )
 
-  p <- p_x + plot_spacer() + p_xy + p_y +
+  p <- p_x +
+    plot_spacer() +
+    p_xy +
+    p_y +
     plot_layout(ncol = 2, widths = c(8, 2), heights = c(2, 8))
 
   ggsave(

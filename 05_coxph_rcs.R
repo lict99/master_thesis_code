@@ -32,16 +32,21 @@ ukb_data <- read_csv("results/00/ukb_data.csv") |>
 # Plotting restricted cubic splines for UK Biobank data
 for (event in c("os", "css")) {
   for (covar_set in c("set1", "set2")) {
-    char_event <- switch(event,
+    char_event <- switch(
+      event,
       os = "总体生存期",
       css = "癌症特异性生存期",
       stop("Unknown event", call. = FALSE)
     )
-    covars <- switch(covar_set,
+    covars <- switch(
+      covar_set,
       set1 = c("age_at_diagnosis", "sex"),
       set2 = c(
-        "age_at_diagnosis", "sex", "body_mass_index",
-        "smoking_status", "alcohol_drinker_status"
+        "age_at_diagnosis",
+        "sex",
+        "body_mass_index",
+        "smoking_status",
+        "alcohol_drinker_status"
       ),
       stop("Unknown covariate set", call. = FALSE)
     )
@@ -82,17 +87,23 @@ hx_data <- read_csv("results/01/hx_data.csv") |>
 # Plotting restricted cubic splines for West China data
 for (event in c("os", "css", "dfs")) {
   for (covar_set in c("set1", "set2")) {
-    char_event <- switch(event,
+    char_event <- switch(
+      event,
       os = "总体生存期",
       css = "癌症特异性生存期",
       dfs = "无疾病生存期",
       stop("Unknown event", call. = FALSE)
     )
-    covars <- switch(covar_set,
+    covars <- switch(
+      covar_set,
       set1 = c("age", "sex"),
       set2 = c(
-        "age", "sex", "body_mass_index",
-        "smoking", "alcohol", "neo_adjuvant_therapy"
+        "age",
+        "sex",
+        "body_mass_index",
+        "smoking",
+        "alcohol",
+        "neo_adjuvant_therapy"
       ),
       stop("Unknown covariate set", call. = FALSE)
     )

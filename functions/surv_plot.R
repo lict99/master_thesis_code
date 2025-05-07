@@ -17,12 +17,13 @@
 #' @return A `patchwork` object combining the survival plot and the risk table.
 #' @note This is a high coupled funtion to control workflow.
 plot_ggsurv <- function(
-    fit,
-    legend.title,
-    legend.labs,
-    title,
-    family,
-    ...) {
+  fit,
+  legend.title,
+  legend.labs,
+  title,
+  family,
+  ...
+) {
   loadNamespace("survminer")
   loadNamespace("ggplot2")
   loadNamespace("ggtext")
@@ -35,7 +36,8 @@ plot_ggsurv <- function(
     pval = FALSE,
     pval.method = FALSE,
     risk.table = TRUE,
-    legend.title = switch(legend.title,
+    legend.title = switch(
+      legend.title,
       plt_300 = "血小板计数 &gt; 300&times;10<sup>9</sup>/L",
       plt_400 = "血小板计数 &gt; 400&times;10<sup>9</sup>/L",
       stop("Unknown legend title", call. = FALSE)
@@ -43,7 +45,8 @@ plot_ggsurv <- function(
     legend.labs = vapply(
       legend.labs,
       function(x) {
-        switch(x,
+        switch(
+          x,
           yes = "是",
           no = "否",
           stop("Unknown legend label", call. = FALSE)
@@ -51,7 +54,8 @@ plot_ggsurv <- function(
       },
       character(1L)
     ),
-    title = switch(title,
+    title = switch(
+      title,
       os = "总体生存期",
       css = "癌症特异性生存期",
       dfs = "无疾病生存期",
@@ -91,11 +95,12 @@ plot_ggsurv <- function(
     ) +
     ggplot2::scale_y_continuous(limits = c(ymin, 1))
 
-  p$table <- p$table + ggplot2::theme(
-    text = ggplot2::element_text(family = family),
-    axis.title.y = ggtext::element_markdown(),
-    plot.title = ggplot2::element_text(size = 15)
-  )
+  p$table <- p$table +
+    ggplot2::theme(
+      text = ggplot2::element_text(family = family),
+      axis.title.y = ggtext::element_markdown(),
+      plot.title = ggplot2::element_text(size = 15)
+    )
 
   pp <- (p$plot / p$table) + patchwork::plot_layout(heights = c(0.75, 0.25))
 

@@ -32,9 +32,19 @@ ukb_tb1_df <- ukb_data |>
     group = "UK Biobank"
   ) |>
   select(
-    platelet_count, plt_300, plt_400,
-    os, css, dfs, fu_time,
-    age, sex, body_mass_index, smoking, alcohol, neo_adjuvant_therapy,
+    platelet_count,
+    plt_300,
+    plt_400,
+    os,
+    css,
+    dfs,
+    fu_time,
+    age,
+    sex,
+    body_mass_index,
+    smoking,
+    alcohol,
+    neo_adjuvant_therapy,
     diagnostic_lag_time,
     group
   )
@@ -61,9 +71,19 @@ hx_tb1_df <- hx_data |>
     group = "West China"
   ) |>
   select(
-    platelet_count, plt_300, plt_400,
-    os, css, dfs, fu_time,
-    age, sex, body_mass_index, smoking, alcohol, neo_adjuvant_therapy,
+    platelet_count,
+    plt_300,
+    plt_400,
+    os,
+    css,
+    dfs,
+    fu_time,
+    age,
+    sex,
+    body_mass_index,
+    smoking,
+    alcohol,
+    neo_adjuvant_therapy,
     diagnostic_lag_time,
     group
   )

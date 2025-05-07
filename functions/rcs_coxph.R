@@ -22,11 +22,12 @@
 #' non-linear models.
 #' 4. ph_pval: global p-value from proportional hazard assumption test.
 .calc_coxph_rcs <- function(
-    data,
-    time,
-    event,
-    target,
-    covariates) {
+  data,
+  time,
+  event,
+  target,
+  covariates
+) {
   loadNamespace("stats")
   loadNamespace("survival")
   loadNamespace("Hmisc")
@@ -114,14 +115,15 @@
 #' @return A ggplot2 object displaying the hazard ratio curve, confidence
 #' intervals, and density distribution of the target variable.
 plot_coxph_rcs <- function(
-    data,
-    time,
-    event,
-    target,
-    covariates,
-    font_family,
-    xlab = target,
-    ylab = "风险比") {
+  data,
+  time,
+  event,
+  target,
+  covariates,
+  font_family,
+  xlab = target,
+  ylab = "风险比"
+) {
   loadNamespace("stats")
   loadNamespace("scales")
   loadNamespace("ggplot2")

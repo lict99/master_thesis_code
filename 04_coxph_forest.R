@@ -45,8 +45,11 @@ ukb_coxph_df <- calc_coxph_pairwise(
   covariates_list = list(
     c("age_at_diagnosis", "sex"),
     c(
-      "age_at_diagnosis", "sex", "body_mass_index",
-      "smoking_status", "alcohol_drinker_status"
+      "age_at_diagnosis",
+      "sex",
+      "body_mass_index",
+      "smoking_status",
+      "alcohol_drinker_status"
     )
   )
 )
@@ -64,7 +67,15 @@ ukb_forest_data <- ukb_coxph_df |>
   pivot_wider(
     names_from = target,
     values_from = c(
-      coef, se, p_value, hr, hr_l95, hr_u95, ph_pval, hr_fmt, p_fmt
+      coef,
+      se,
+      p_value,
+      hr,
+      hr_l95,
+      hr_u95,
+      ph_pval,
+      hr_fmt,
+      p_fmt
     )
   ) |>
   mutate(
@@ -86,12 +97,8 @@ ukb_forest_data <- ukb_coxph_df |>
       factor(labels = c("模型 1", "模型 2")) |>
       as.character()
   ) |>
-  add_row(
-    event_type = "os", .before = 1
-  ) |>
-  add_row(
-    event_type = "css", .after = 3
-  ) |>
+  add_row(event_type = "os", .before = 1) |>
+  add_row(event_type = "css", .after = 3) |>
   mutate(
     event_type = case_when(
       duplicated(event_type) ~ paste0("    ", model),
@@ -115,7 +122,8 @@ ukb_forest_layout <- ukb_forest_data |>
     vapply(
       x,
       function(y) {
-        switch(y,
+        switch(
+          y,
           event_type = "生存结局",
           hr_fmt = "HR (95% CI)",
           ci_col = " ",
@@ -221,8 +229,12 @@ hx_coxph_df <- calc_coxph_pairwise(
   covariates_list = list(
     c("age", "sex"),
     c(
-      "age", "sex", "body_mass_index",
-      "smoking", "alcohol", "neo_adjuvant_therapy"
+      "age",
+      "sex",
+      "body_mass_index",
+      "smoking",
+      "alcohol",
+      "neo_adjuvant_therapy"
     )
   )
 )
@@ -240,7 +252,15 @@ hx_forest_data <- hx_coxph_df |>
   pivot_wider(
     names_from = target,
     values_from = c(
-      coef, se, p_value, hr, hr_l95, hr_u95, ph_pval, hr_fmt, p_fmt
+      coef,
+      se,
+      p_value,
+      hr,
+      hr_l95,
+      hr_u95,
+      ph_pval,
+      hr_fmt,
+      p_fmt
     )
   ) |>
   mutate(
@@ -262,15 +282,9 @@ hx_forest_data <- hx_coxph_df |>
       factor(labels = c("模型 1", "模型 2")) |>
       as.character()
   ) |>
-  add_row(
-    event_type = "os", .before = 1
-  ) |>
-  add_row(
-    event_type = "css", .after = 3
-  ) |>
-  add_row(
-    event_type = "dfs", .after = 6
-  ) |>
+  add_row(event_type = "os", .before = 1) |>
+  add_row(event_type = "css", .after = 3) |>
+  add_row(event_type = "dfs", .after = 6) |>
   mutate(
     event_type = case_when(
       duplicated(event_type) ~ paste0("    ", model),
@@ -295,7 +309,8 @@ hx_forest_layout <- hx_forest_data |>
     vapply(
       x,
       function(y) {
-        switch(y,
+        switch(
+          y,
           event_type = "生存结局",
           hr_fmt = "HR (95% CI)",
           ci_col = " ",

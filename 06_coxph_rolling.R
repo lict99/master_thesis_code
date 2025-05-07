@@ -32,11 +32,15 @@ ukb_data <- read_csv("results/00/ukb_data.csv") |>
 # Plotting rolling Cox proportional hazards models for UK Biobank data
 for (event in c("os", "css")) {
   for (covar_set in c("set1", "set2")) {
-    covars <- switch(covar_set,
+    covars <- switch(
+      covar_set,
       set1 = c("age_at_diagnosis", "sex"),
       set2 = c(
-        "age_at_diagnosis", "sex", "body_mass_index",
-        "smoking_status", "alcohol_drinker_status"
+        "age_at_diagnosis",
+        "sex",
+        "body_mass_index",
+        "smoking_status",
+        "alcohol_drinker_status"
       ),
       stop("Unknown set of covariates", call. = FALSE)
     )

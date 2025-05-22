@@ -227,3 +227,4 @@ rsconnect/
 .DS_Store
 */
 !functions/
+/.Rprofile
